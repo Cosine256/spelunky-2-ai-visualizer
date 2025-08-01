@@ -15,29 +15,38 @@ return Entity_AI:new({
         { -- Jump
             shape = geometry.create_circle_shape(5):clip_box(0, -2, nil, 2),
             flip_with_ent = true,
-            is_active = function(ent)
-                -- TODO
-                return true
+            is_visible = function(ent)
+                return ent.move_state == 0 or ent.move_state == 1
             end,
             label = "Jump"
         },
         { -- Turn
             shape = geometry.create_circle_shape(5):clip_box(nil, -2, 0, 2),
             flip_with_ent = true,
-            is_active = function(ent)
-                -- TODO
-                return true
+            is_visible = function(ent)
+                return ent.move_state == 0 or ent.move_state == 1
             end,
             label = "Turn"
         },
         { -- Roll
             shape = geometry.create_donut_shape(5, 12):clip_box(0, -2, nil, 2),
             flip_with_ent = true,
-            is_active = function(ent)
-                -- TODO
-                return true
+            is_visible = function(ent)
+                return ent.move_state == 0 or ent.move_state == 1
             end,
             label = "Roll"
+        },
+        { -- Stomp
+            shape = geometry.create_box_shape(-1000, -1000, 0, 1000),
+            flip_with_ent = true,
+            is_visible = function(ent)
+                return ent.state & 0xfe == 8 -- state 8 or 9
+            end,
+            is_active = function(ent)
+                return ent.chased_target_uid ~= -1
+            end,
+            label = "Stomp",
+            label_position = LABEL_POSITION.RIGHT,
         }
     }
 })

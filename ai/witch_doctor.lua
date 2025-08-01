@@ -13,9 +13,21 @@ return {
                 line_of_sight_checks = 6,
                 is_active = function(ent)
                     -- TODO: When can the witch doctor can initiate another attack after just doing one? He can start another attack at some point during the finishing animation from the previous one.
+                    -- ANSWER?: It looks like it is always active, and will spawn a hint entity on its target if the target does not already have one.
                     return true
                 end,
                 label = "Attack"
+            },
+            { -- Chat
+                shape = geometry.create_box_shape(0.5, -0.1, 1.5, 0.1),
+                flip_with_ent = true,
+                is_visible = function(ent)
+                    return ent.move_state == 0 or ent.move_state == 1
+                end,
+                is_active = function(ent)
+                    return ent.cooldown_timer == 0
+                end,
+                label = "Chat"
             }
         }
     }),
@@ -29,18 +41,19 @@ return {
                 -- The skull can move when partially transparent, but has no hurtbox unless it's fully opaque.
                 shape = geometry.create_circle_shape(4),
                 is_visible = function(ent)
-                    -- TODO: Is this actually how the game determines whether the skull is active?
-                    return ent.color.a > 0
+                    local witch = get_entity(ent.witch_doctor_uid)
+                    if witch ~= nil then
+                        return witch.stun_timer == 0 and witch.frozen_timer == 0 and not test_flag(witch.flags, ENT_FLAG.DEAD)
+                    end
+                    return false
                 end,
                 is_active = function(ent)
-                    -- TODO: When does the skull get an active hurtbox?
-                    return true
+                    return ent.color.a >= 1
                 end,
                 label = "Chase",
             },
-            --[[ TODO: This isn't really a range and shouldn't be depicted as one.
             { -- Orbit
-                shape = geometry.create_circle_shape(1.3),
+                shape = geometry.create_donut_shape(1.3, 1.3),
                 translate_shape = function(ent)
                     if ent.witch_doctor_uid >= 0 then
                         local x, y = get_position(ent.witch_doctor_uid)
@@ -48,11 +61,17 @@ return {
                     end
                 end,
                 is_visible = function(ent)
-                    -- TODO: Is this actually how the game determines whether the skull is active? Does it care if the witch doctor exists?
-                    return ent.color.a > 0 and ent.witch_doctor_uid >= 0
+                    local witch = get_entity(ent.witch_doctor_uid)
+                    return witch ~= nil
+                end,
+                is_active = function(ent)
+                    local witch = get_entity(ent.witch_doctor_uid)
+                    if witch == nil then return false end
+                    return witch.stun_timer == 0 and witch.frozen_timer == 0 and not test_flag(witch.flags, ENT_FLAG.DEAD) and ent.move_state ~= 6
                 end,
                 label = "Orbit",
-            }]]
+                label_position = LABEL_POSITION.TOP,
+            }
         }
     })
 }

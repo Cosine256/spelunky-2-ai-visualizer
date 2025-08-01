@@ -9,7 +9,7 @@ return Entity_AI:new({
             flip_with_ent = true,
             line_of_sight_checks = 3,
             is_visible = function(ent)
-                return not ent.in_stack
+                return not ent.in_stack and (ent.overlay == nil or ent.overlay.type.id ~= ENT_TYPE.MOUNT_MECH)
             end,
             is_active = function(ent)
                 -- TODO: attack_cooldown_timer is normally 0-60, but breaking an olmite stack can produce an olmite with a timer > 60 that never decrements. An olmite in this state can jump immediately and will fix its timer after landing.
@@ -27,6 +27,24 @@ return Entity_AI:new({
             end,
             label = "Stomp",
             label_position = LABEL_POSITION.TOP
+        },
+        { -- Run (corridor check)
+            shape = function(ent, ctx)
+                return geometry.create_point_set_shape(Vec2:new(ent.offsetx - ent.hitboxx, 1), Vec2:new(ent.offsetx + ent.hitboxx, 1))
+            end,
+            type = Entity_AI.RANGE_TYPE.SOLID_CHECK,
+            is_active = function(ent)
+                return ent.standing_on_uid ~= -1 and (ent.move_state == 0 or ent.move_state == 1 or ent.move_state == 9)
+            end,
+            label = function(ent)
+                if ent.move_state == 9 then
+                    return "Walk"
+                else
+                    return "Run"
+                end
+            end,
+            -- TODO: This hack puts the label above the points.
+            label_position = LABEL_POSITION.BOTTOM
         }
     }
 })

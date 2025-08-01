@@ -1,3 +1,5 @@
+local HITBOX_H_HALF = get_type(ENT_TYPE.MONS_LAVAMANDER).hitboxx
+
 return Entity_AI:new({
     id = "lavamander",
     name = "Lavamander",
@@ -12,12 +14,19 @@ return Entity_AI:new({
             is_active = function(ent)
                 return ent.state == 3 and (ent.move_state == 0 or ent.move_state == 1) and ent.shoot_lava_timer == 0 and ent.chased_target_uid == -1
             end,
-            label = "Aggro"
+            label = "Aggro",
+            label_position = LABEL_POSITION.TOP,
         },
         { -- Rise and attack
-            shape = geometry.create_box_shape(-1000, -1, 1000, 4),
+            shape = function(ent)
+                if ent.chased_target_uid == -1 then
+                    return geometry.create_circle_shape(8):clip_box(nil, -1, nil, 4)
+                else
+                    return geometry.create_box_shape(-1000, -1, 1000, 4)
+                end
+            end,
             is_visible = function(ent)
-                return ent.is_hot and ent.chased_target_uid >= 0 and ent.shoot_lava_timer == 0
+                return ent.is_hot and ent.shoot_lava_timer == 0
             end,
             is_active = function(ent)
                 return (ent.state == 3 or ent.state == CHAR_STATE.FALLING) and (ent.move_state == 0 or ent.move_state == 1)
@@ -48,6 +57,14 @@ return Entity_AI:new({
                 return ent.state == CHAR_STATE.STANDING and (ent.move_state == 0 or ent.move_state == 1) and ent.jump_pause_timer == 0
             end,
             label = "Turn"
-        }
+        },
+        { -- Lava checks
+            -- Top check is used to stop the lavamander rising during the attack. Both are used to check if the lavamander is in lava and should
+            -- heat/cool.
+            shape = geometry.create_point_set_shape(Vec2:new(0, HITBOX_H_HALF / 2), Vec2:new(0, -HITBOX_H_HALF / 2)),
+            type = Entity_AI.RANGE_TYPE.SOLID_CHECK,
+            label = "Lava Checks",
+            label_position = LABEL_POSITION.BOTTOM
+        },
     }
 })
