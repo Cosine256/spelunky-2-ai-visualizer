@@ -1,4 +1,4 @@
--- TODO: Targetting should be dimmed or hidden after detaching from wall.
+-- TODO: Targeting should be dimmed or hidden after detaching from wall.
 return Entity_AI:new({
     id = "grub",
     name = "Grub",

@@ -2,7 +2,7 @@ return Entity_AI:new({
     id = "mosquito",
     name = "Mosquito",
     ent_type = ENT_TYPE.MONS_MOSQUITO,
-    targetting = false,
+    targeting = false,
     ranges = {
         { -- Attack
             shape = geometry.create_box_shape(0, -0.2, 10, 0.2),

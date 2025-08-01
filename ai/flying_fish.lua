@@ -1,4 +1,4 @@
--- TODO: How does the targetting work?
+-- TODO: How does the targeting work?
 return Entity_AI:new({
     id = "flying_fish",
     name = "Flying fish",

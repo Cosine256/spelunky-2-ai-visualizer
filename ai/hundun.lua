@@ -74,7 +74,7 @@ return {
         name = "Hundun bird head",
         parent_id = "hundun",
         ent_type = ENT_TYPE.MONS_HUNDUN_BIRDHEAD,
-        targetting = {
+        targeting = {
             id_field = "targeted_player_uid"
         }
     }),
@@ -83,7 +83,7 @@ return {
         name = "Hundun snake head",
         parent_id = "hundun",
         ent_type = ENT_TYPE.MONS_HUNDUN_SNAKEHEAD,
-        targetting = {
+        targeting = {
             id_field = "targeted_player_uid"
         }
     })

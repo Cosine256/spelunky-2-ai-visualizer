@@ -5,7 +5,7 @@ return Entity_AI:new({
     id = "caveman",
     name = "Caveman",
     ent_type = ENT_TYPE.MONS_CAVEMAN,
-    targetting = false,
+    targeting = false,
     ranges = {
         { -- Player wake
             shape = geometry.create_box_shape(-4, -2, 4, 2),

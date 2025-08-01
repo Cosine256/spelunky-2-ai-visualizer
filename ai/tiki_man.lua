@@ -3,7 +3,7 @@ return Entity_AI:new({
     id = "tiki_man",
     name = "Tiki man",
     ent_type = ENT_TYPE.MONS_TIKIMAN,
-    targetting = false,
+    targeting = false,
     ranges = {
         { -- Aggro/attack
             shape = geometry.create_box_shape(0, -0.4, 6, 0.4),

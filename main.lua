@@ -1,6 +1,6 @@
 meta.name = "AI Visualizer"
 meta.version = "0.0.0"
-meta.description = "Adds an overlay showing entity AI ranges and targetting information."
+meta.description = "Adds an overlay showing entity AI ranges and targeting information."
 meta.author = "Cosine"
 
 local ai_common = require("ai/common")
@@ -262,8 +262,8 @@ local function process_tracked_entity(id)
     end
 
     local ranges_visible = options.entity_ranges_visible
-    local targetting_visible = options.entity_target_visible and entity_ai.targetting
-    if not ranges_visible and not targetting_visible then
+    local targeting_visible = options.entity_target_visible and entity_ai.targeting
+    if not ranges_visible and not targeting_visible then
         return
     end
 
@@ -393,20 +393,20 @@ local function process_tracked_entity(id)
         end
     end
 
-    -- TODO: Dim the targetting when the entity is in a state where target doesn't matter, similar to dimming ranges. Maybe dim when entity cannot update targetting timer or find new targets.
+    -- TODO: Dim the targeting when the entity is in a state where target doesn't matter, similar to dimming ranges. Maybe dim when entity cannot update targeting timer or find new targets.
     -- TODO: Put the timer somewhere on the entity if it has no target (target was destroyed or changed layer), but it's still seeking a new target.
-    -- TODO: Indicate the direction of the targetting for when both the entity and target are off-screen.
-    if targetting_visible then
-        local target = get_entity(ai_common.get_field(ent, entity_ai.targetting.id_field))
+    -- TODO: Indicate the direction of the targeting for when both the entity and target are off-screen.
+    if targeting_visible then
+        local target = get_entity(ai_common.get_field(ent, entity_ai.targeting.id_field))
         if target then
-            local timer_value = ai_common.get_field(ent, entity_ai.targetting.timer_field)
+            local timer_value = ai_common.get_field(ent, entity_ai.targeting.timer_field)
             local timer
             if timer_value then
-                timer = { value = timer_value, max_value = entity_ai.targetting.timer_max }
+                timer = { value = timer_value, max_value = entity_ai.targeting.timer_max }
             end
             local target_x, target_y = get_position(target.uid)
-            -- TODO: Don't show targetting when both entities are not on the camera layer.
-            -- TODO: Handle targetting between both layers.
+            -- TODO: Don't show targeting when both entities are not on the camera layer.
+            -- TODO: Handle targeting between both layers.
             table.insert(tracked_ent_data.draw_items, drawing.Draw_Item:new({
                 shape = geometry.create_line_shape(Vec2:new(ent_x, ent_y), Vec2:new(target_x, target_y)),
                 ucolors = TARGET_COLOR:get().bright,
@@ -446,8 +446,8 @@ local function draw_options(ctx, is_window)
         options.entity_ranges_visible = ctx:win_check("Ranges visible", options.entity_ranges_visible)
         ctx:win_text("Global toggle for entity range overlay.")
 
-        options.entity_target_visible = ctx:win_check("Targetting visible", options.entity_target_visible)
-        ctx:win_text("Global toggle for entity targetting overlay.")
+        options.entity_target_visible = ctx:win_check("targeting visible", options.entity_target_visible)
+        ctx:win_text("Global toggle for entity targeting overlay.")
 
         if ctx:win_button("Check all") then
             for id, _ in pairs(options.entity_ai) do

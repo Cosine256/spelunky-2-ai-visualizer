@@ -1,4 +1,4 @@
--- AI bug: Scarabs have a 60 frame targetting timer, but they only decrement it for one frame between movement cycles, so they only check for a new target after moving 60 times.
+-- AI bug: Scarabs have a 60 frame targeting timer, but they only decrement it for one frame between movement cycles, so they only check for a new target after moving 60 times.
 return Entity_AI:new({
     id = "scarab",
     name = "Scarab",

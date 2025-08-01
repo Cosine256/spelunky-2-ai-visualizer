@@ -6,7 +6,7 @@ return Entity_AI:new({
     id = "quillback",
     name = "Quillback",
     ent_type = ENT_TYPE.MONS_CAVEMAN_BOSS,
-    targetting = {
+    targeting = {
         id_field = "chased_target_uid"
     },
     ranges = {

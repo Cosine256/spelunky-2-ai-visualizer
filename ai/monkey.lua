@@ -3,7 +3,7 @@ return Entity_AI:new({
     id = "monkey",
     name = "Monkey",
     ent_type = ENT_TYPE.MONS_MONKEY,
-    targetting = {
+    targeting = {
         -- TODO: Monkeys use the target_selection_timer field, but it gets reset upon landing. Does it actually have any function if it has time to count down? When do they switch targets? Seems to be as often as once per frame.
         id_field = "chased_target_uid"
     },

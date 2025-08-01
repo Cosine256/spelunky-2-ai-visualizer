@@ -3,7 +3,7 @@ return {
         id = "witch_doctor",
         name = "Witch doctor",
         ent_type = ENT_TYPE.MONS_WITCHDOCTOR,
-        targetting = {
+        targeting = {
             id_field = "chased_target_uid"
         },
         ranges = {

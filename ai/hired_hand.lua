@@ -5,7 +5,7 @@ return Entity_AI:new({
     id = "hired_hand",
     name = "Hired hand & eggplant child",
     ent_type = { ENT_TYPE.CHAR_HIREDHAND, ENT_TYPE.CHAR_EGGPLANT_CHILD },
-    targetting = {
+    targeting = {
         id_field = { "ai", "target_uid" }
     },
     ranges = {

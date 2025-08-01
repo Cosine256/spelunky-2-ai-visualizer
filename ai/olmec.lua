@@ -8,7 +8,7 @@ return Entity_AI:new({
     is_dead = function(ent)
         return ent.attack_phase == 3
     end,
-    targetting = {
+    targeting = {
         id_field = "target_uid",
         timer_field = "ai_timer",
         timer_max = "200",

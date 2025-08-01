@@ -2,7 +2,7 @@ return Entity_AI:new({
     id = "horned_lizard",
     name = "Horned lizard",
     ent_type = ENT_TYPE.MONS_HORNEDLIZARD,
-    targetting = false,
+    targeting = false,
     ranges = {
         { -- Attack
             shape = geometry.create_box_shape(0, -0.45, 6, 0.45),

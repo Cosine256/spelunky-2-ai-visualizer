@@ -3,7 +3,7 @@ local Entity_AI = {
     is_dead = function(ent)
         return ent.health == 0
     end,
-    targetting = {
+    targeting = {
         id_field = "chased_target_uid",
         timer_field = "target_selection_timer",
         timer_max = 60

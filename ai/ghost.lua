@@ -11,7 +11,7 @@ return Entity_AI:new({
         ENT_TYPE.MONS_GHOST_SMALL_SURPRISED,
         ENT_TYPE.MONS_GHOST_SMALL_HAPPY
     },
-    targetting = {
+    targeting = {
         id_field = "chased_target_uid"
     }
 })
