@@ -1,6 +1,4 @@
 -- TODO: Detect when Quillback is turning
--- TODO: Stomp shape
--- TODO: He switches to the stomping state if you are behind him while he is falling, even if the fall wasn't caused by him jumping at the player. Doesn't matter if you're above or below him. Haven't checked ranges on this behavior.
 -- TODO: If he is falling for any reason and you enter the roll range in front of him, he will start to roll in mid air.
 -- TODO: If he is falling for any reason and you enter the jump range in front of him, he will gain forward velocity.
 -- TODO: Player position sort of influences his hops when stuck on a single tile.

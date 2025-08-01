@@ -24,6 +24,7 @@ return Entity_AI:new({
             label = "Attack"
         },
         { -- Resurrect
+            -- TODO: Clarify that this range is a hitbox overlap check for resurrectable bodies.
             shape = geometry.create_box_shape(-8, -8, 8, 8),
             layer = function(ent)
                 -- Back layer necromancers can attack the front layer, but not vice-versa.

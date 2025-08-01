@@ -18,8 +18,6 @@ return {
                     return ent.move_state ~= 4
                 end,
                 is_active = function(ent, ctx)
-                    -- TODO: Are the X limits based on the level width?
-                    -- ANSWER: Yes, hundun won't move left if its x < 8 (5 from left edge) or right if x > state.width * 10 - 2 (5 from right edge).
                     -- TODO: Hundun can get closer to the sides while walking. I think this is because it uses the same checks to start walking, but then doesn't cut off the walk movement like it does when jumping into the sides.
                     return ent.move_state == 0 and ent.bounce_timer == 0 and not ctx.is_head_attacking and ctx.ent_x >= 8
                 end,
@@ -57,8 +55,7 @@ return {
             { -- Fireball
                 shape = geometry.create_box_shape(-1000, -1000, 1000, 1000),
                 post_transform_shape = function(ent, ctx, shape)
-                    -- TODO: Is this hard-coded, or based on something in the level? Hundun's y_level is an arbitrary value slightly above the spike floor when it's at the top. Seems to be hard-coded based on testing where I moved Hundun further up.
-                    -- ANSWER: Yes, it's hard-coded to 101.5
+                    -- This height is hard-coded into the game.
                     return shape:clip_bottom(101.5)
                 end,
                 is_visible = function(ent)

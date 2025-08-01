@@ -1,6 +1,5 @@
 -- The carried entity doesn't seem to affect behavior. Hermit crabs with no carried entity will stay emerged and spawn bubbles forever.
--- TODO: Hermit crabs in nooks or 1 tile tunnels might behave differently.
--- TODO: Dim targetting when crab has no shelter or pole..
+-- TODO: Dim targetting when crab has no shelter or pole.
 return Entity_AI:new({
     id = "hermit_crab",
     name = "Hermit crab",

@@ -38,6 +38,7 @@ return Entity_AI:new({
             label = "Turn"
         },
         { -- Claw Retract
+            -- TODO: Clarify that this range applies to the claw, not the target.
             shape = geometry.create_box_shape(-1000, -1000, 1000, -1.5),
             is_visible = function(ent)
                 return ent.move_state == 11
@@ -46,6 +47,7 @@ return Entity_AI:new({
             label_position = LABEL_POSITION.TOP
         },
         { -- Claw Retract
+            -- TODO: Clarify that this range applies to the claw, not the target.
             shape = geometry.create_box_shape(-1000, 1.5, 1000, 1000),
             is_visible = function(ent)
                 return ent.move_state == 11

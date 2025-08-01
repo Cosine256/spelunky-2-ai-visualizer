@@ -1,4 +1,3 @@
--- TODO: Add the ranges that cause the UFO to move up or down.
 return Entity_AI:new({
     id = "ufo",
     name = "UFO",
