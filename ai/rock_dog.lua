@@ -1,7 +1,7 @@
 -- If a caveman is riding the rock dog, then the caveman's aggro_timer controls when the rock dog stops running around after attacking.
 return Entity_AI:new({
     id = "rock_dog",
-    name = "Rock dog",
+    name = "Rock Dog",
     ent_type = ENT_TYPE.MOUNT_ROCKDOG,
     preprocess = function(ent, ctx)
         local rider_ent = get_entity(ent.rider_uid)
@@ -10,7 +10,9 @@ return Entity_AI:new({
         end
     end,
     ranges = {
-        { -- Attack
+        {
+            id = "attack",
+            name = "Attack",
             shape = geometry.create_box_shape(0, -0.4, 6, 0.4),
             flip_with_ent = true,
             line_of_sight_checks = 6,
@@ -20,8 +22,7 @@ return Entity_AI:new({
             is_active = function(ent, ctx)
                 -- Rock dogs have a simulated attack input which they press and hold down while a target is in range. The attack only happens once on the first frame that the input is pressed, unless the rock dog has a hostile rider. The rock dog can't attack again until no targets are in range and it releases its attack input for at least one frame.
                 return ent.attack_cooldown == 0 and (ctx.hostile_rider_ent or not test_flag(ent.buttons, BUTTON.WHIP))
-            end,
-            label = "Attack"
+            end
         }
     }
 })

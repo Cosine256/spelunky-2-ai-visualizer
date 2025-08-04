@@ -4,19 +4,21 @@
 -- Punch is prioritized over all other actions.
 return Entity_AI:new({
     id = "yeti_queen",
-    name = "Yeti queen",
+    name = "Yeti Queen",
     ent_type = ENT_TYPE.MONS_YETIQUEEN,
     ranges = {
-        { -- Punch
+        {
+            id = "punch",
+            name = "Punch",
             shape = geometry.create_box_shape(-1, 0, 1, 2),
             is_active = function(ent)
                 return (ent.state == CHAR_STATE.STANDING or ent.state == CHAR_STATE.FALLING) and (ent.move_state == 0 or ent.move_state == 1)
             end,
-            label = "Punch",
             label_position = LABEL_POSITION.TOP
         },
-        { -- Punch hurtbox
-            -- Width is the width of the yeti queen's hitbox, and the heights from the top of her hitbox to 1 tile above.
+        {
+            id = "punch_hurtbox",
+            name = "Punch hurtbox",
             shape = function(ent)
                 local top = ent.offsety + ent.hitboxy
                 return geometry.create_box_shape(ent.offsetx - ent.hitboxx, top, ent.offsetx + ent.hitboxx, top + 1)
@@ -25,24 +27,25 @@ return Entity_AI:new({
             is_active = function(ent)
                 -- TODO: Only seems to deal damage on the first frame. How do I detect this?
                 return ent.move_state == 6
-            end,
-            label = "Punch hurtbox"
+            end
         },
-        { -- Lunge
+        {
+            id = "lunge",
+            name = "Lunge",
             shape = geometry.create_box_shape(1, -0.5, 5, 2),
             flip_with_ent = true,
             is_active = function(ent)
                 return ent.state == CHAR_STATE.STANDING and (ent.move_state == 0 or ent.move_state == 1)
-            end,
-            label = "Lunge"
+            end
         },
-        { -- Turn
+        {
+            id = "turn",
+            name = "Turn",
             shape = geometry.create_box_shape(-5, -0.5, -1, 2),
             flip_with_ent = true,
             is_active = function(ent)
                 return ent.state == CHAR_STATE.STANDING and (ent.move_state == 0 or ent.move_state == 1)
-            end,
-            label = "Turn"
+            end
         }
     }
 })

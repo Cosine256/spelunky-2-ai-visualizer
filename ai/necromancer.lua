@@ -7,7 +7,9 @@ return Entity_AI:new({
     name = "Necromancer",
     ent_type = ENT_TYPE.MONS_NECROMANCER,
     ranges = {
-        { -- Attack
+        {
+            id = "attack",
+            name = "Attack",
             shape = geometry.create_circle_shape(8),
             layer = function(ent)
                 -- Back layer necromancers can attack the front layer, but not vice-versa.
@@ -20,11 +22,12 @@ return Entity_AI:new({
             is_active = function(ent)
                 -- TODO: He can acquire a target while falling and will immediately attack when touching the ground even if the target moves out of range.
                 return ent.state == CHAR_STATE.STANDING and ent.resurrection_timer == 0
-            end,
-            label = "Attack"
+            end
         },
-        { -- Resurrect
+        {
             -- TODO: Clarify that this range is a hitbox overlap check for resurrectable bodies.
+            id = "resurrect",
+            name = "Resurrect",
             shape = geometry.create_box_shape(-8, -8, 8, 8),
             layer = function(ent)
                 -- Back layer necromancers can attack the front layer, but not vice-versa.
@@ -32,8 +35,7 @@ return Entity_AI:new({
             end,
             is_visible = function(ent)
                 return ent.move_state == 6
-            end,
-            label = "Resurrect"
+            end
         }
     }
 })

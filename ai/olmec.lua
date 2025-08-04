@@ -14,7 +14,9 @@ return Entity_AI:new({
         timer_max = "200",
     },
     ranges = {
-        { -- Jump
+        {
+            id = "jump",
+            name = "Jump",
             shape = geometry.create_circle_shape(10),
             is_visible = function(ent)
                 return ent.attack_phase == 0 or ent.attack_phase == 2
@@ -22,10 +24,11 @@ return Entity_AI:new({
             is_active = function(ent)
                 return ent.move_state == 0 and ent.attack_timer <= 1 and ent.falling_timer == 0
             end,
-            label = "Jump",
             label_position = LABEL_POSITION.LEFT
         },
-        { -- Stomp
+        {
+            id = "stomp",
+            name = "Stomp",
             shape = geometry.create_box_shape(-2, -1000, 2, 0),
             is_visible = function(ent)
                 if ent.attack_phase == 0 or ent.attack_phase == 2 then
@@ -43,7 +46,9 @@ return Entity_AI:new({
             end,
             label_position = LABEL_POSITION.TOP
         },
-        { -- Bomb
+        {
+            id = "bomb",
+            name = "Bomb",
             shape = geometry.create_box_shape(-1000, -1000, 1000, 0),
             post_transform_shape = function(ent, ctx, shape)
                 -- TODO: Is this constraint hard-coded?
@@ -55,7 +60,6 @@ return Entity_AI:new({
             is_active = function(ent)
                 return ent.move_state == 9 and ent.attack_timer <= 1 and ent.phase1_amount_of_bomb_salvos > 0
             end,
-            label = "Bomb",
             -- TODO: Gets shoved off screen when clipping the shape.
             label_position = LABEL_POSITION.TOP
         }

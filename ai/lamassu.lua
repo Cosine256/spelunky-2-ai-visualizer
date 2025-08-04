@@ -4,23 +4,25 @@ return Entity_AI:new({
     name = "Lamassu",
     ent_type = ENT_TYPE.MONS_LAMASSU,
     ranges = {
-        { -- Attack
+        {
+            id = "attack",
+            name = "Attack",
             shape = geometry.create_circle_shape(10):clip_box(0, -1, nil, 1),
             flip_with_ent = true,
             is_active = function(ent)
                 -- TODO
                 return true
-            end,
-            label = "Attack"
+            end
         },
-        { -- Turn
+        {
+            id = "turn",
+            name = "Turn",
             shape = geometry.create_circle_shape(10):clip_box(nil, -1, 0, 1),
             flip_with_ent = true,
             is_active = function(ent)
                 -- TODO
                 return true
-            end,
-            label = "Turn"
+            end
         }
     }
 })

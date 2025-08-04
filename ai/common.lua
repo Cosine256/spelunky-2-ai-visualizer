@@ -10,7 +10,7 @@ module.MOVE_STATE = {
     CLIMBING = 11
 }
 
-local NPC_USABLE_ITEM_CLASS = {
+module.NPC_USABLE_ITEM_CLASS = {
     GUN = {
         action_name = "Shoot",
         can_use_now = function(item)
@@ -40,26 +40,32 @@ local NPC_USABLE_ITEM_CLASS = {
         can_use_now = function(item)
             return item.teleport_number < 3
         end
+    },
+    DEFAULT = {
+        action_name = "Use held item",
+        can_use_now = function(item)
+            return false
+        end
     }
 }
 
 -- NPCs can use these items if their target is within their attack range. NPCs still try to attack when holding other entities, but those entities will remain held and not do anything.
 local NPC_USABLE_ITEMS = {
-    [ENT_TYPE.ITEM_WEBGUN] = NPC_USABLE_ITEM_CLASS.GUN,
-    [ENT_TYPE.ITEM_SHOTGUN] = NPC_USABLE_ITEM_CLASS.GUN,
-    [ENT_TYPE.ITEM_FREEZERAY] = NPC_USABLE_ITEM_CLASS.GUN,
-    [ENT_TYPE.ITEM_CROSSBOW] = NPC_USABLE_ITEM_CLASS.BOW,
-    [ENT_TYPE.ITEM_CAMERA] = NPC_USABLE_ITEM_CLASS.GUN,
-    [ENT_TYPE.ITEM_TELEPORTER] = NPC_USABLE_ITEM_CLASS.TELEPORTER,
-    [ENT_TYPE.ITEM_MATTOCK] = NPC_USABLE_ITEM_CLASS.SWINGABLE,
-    [ENT_TYPE.ITEM_BOOMERANG] = NPC_USABLE_ITEM_CLASS.THROWABLE,
-    [ENT_TYPE.ITEM_MACHETE] = NPC_USABLE_ITEM_CLASS.SWINGABLE,
-    [ENT_TYPE.ITEM_EXCALIBUR] = NPC_USABLE_ITEM_CLASS.SWINGABLE,
-    [ENT_TYPE.ITEM_BROKENEXCALIBUR] = NPC_USABLE_ITEM_CLASS.SWINGABLE,
-    [ENT_TYPE.ITEM_PLASMACANNON] = NPC_USABLE_ITEM_CLASS.GUN,
-    [ENT_TYPE.ITEM_SCEPTER] = NPC_USABLE_ITEM_CLASS.GUN,
-    [ENT_TYPE.ITEM_CLONEGUN] = NPC_USABLE_ITEM_CLASS.GUN,
-    [ENT_TYPE.ITEM_HOUYIBOW] = NPC_USABLE_ITEM_CLASS.BOW
+    [ENT_TYPE.ITEM_WEBGUN] = module.NPC_USABLE_ITEM_CLASS.GUN,
+    [ENT_TYPE.ITEM_SHOTGUN] = module.NPC_USABLE_ITEM_CLASS.GUN,
+    [ENT_TYPE.ITEM_FREEZERAY] = module.NPC_USABLE_ITEM_CLASS.GUN,
+    [ENT_TYPE.ITEM_CROSSBOW] = module.NPC_USABLE_ITEM_CLASS.BOW,
+    [ENT_TYPE.ITEM_CAMERA] = module.NPC_USABLE_ITEM_CLASS.GUN,
+    [ENT_TYPE.ITEM_TELEPORTER] = module.NPC_USABLE_ITEM_CLASS.TELEPORTER,
+    [ENT_TYPE.ITEM_MATTOCK] = module.NPC_USABLE_ITEM_CLASS.SWINGABLE,
+    [ENT_TYPE.ITEM_BOOMERANG] = module.NPC_USABLE_ITEM_CLASS.THROWABLE,
+    [ENT_TYPE.ITEM_MACHETE] = module.NPC_USABLE_ITEM_CLASS.SWINGABLE,
+    [ENT_TYPE.ITEM_EXCALIBUR] = module.NPC_USABLE_ITEM_CLASS.SWINGABLE,
+    [ENT_TYPE.ITEM_BROKENEXCALIBUR] = module.NPC_USABLE_ITEM_CLASS.SWINGABLE,
+    [ENT_TYPE.ITEM_PLASMACANNON] = module.NPC_USABLE_ITEM_CLASS.GUN,
+    [ENT_TYPE.ITEM_SCEPTER] = module.NPC_USABLE_ITEM_CLASS.GUN,
+    [ENT_TYPE.ITEM_CLONEGUN] = module.NPC_USABLE_ITEM_CLASS.GUN,
+    [ENT_TYPE.ITEM_HOUYIBOW] = module.NPC_USABLE_ITEM_CLASS.BOW
 }
 
 function module.get_field(ent, fields)
@@ -141,13 +147,15 @@ function module.npc_use_held_item_range_label(ent)
             return usable_item.action_name
         end
     end
-    return "Use held item"
+    return module.NPC_USABLE_ITEM_CLASS.DEFAULT.action_name
 end
 
 -- Chasers will turn to face their target if the target enters this range while it's active. The range triggers even if they are already facing their target, which appears to do nothing, but still resets the turn timer.
 -- TODO: Show while turning for entities with turn animations. Can't just check for the turning move_state because they also use that state when turning for dialog. How do they keep track of their aggro state while turning?
 function module.create_chaser_turn_range(attack_move_state, turn_timer_field)
     return {
+        id = "turn_to_target",
+        name = "Turn to target",
         shape = geometry.create_donut_shape(3, 4),
         flip_with_ent = true,
         is_visible = function(ent)
@@ -159,7 +167,6 @@ function module.create_chaser_turn_range(attack_move_state, turn_timer_field)
         is_active = function(ent)
             return ent.standing_on_uid ~= -1 and ent[turn_timer_field] == 0
         end,
-        label = "Turn to target",
         label_position = LABEL_POSITION.TOP
     }
 end
@@ -167,14 +174,15 @@ end
 -- TODO: There is more complexity to this than I thought. Some combination of ai_state (or the equivalent field for non-RoomOwners), nearby floors (up to 3 tall?), and other unknown factors prevents jumping when the player is up to 1 tile above and any distance away. I've also seen cat mummies start jumping in small holes specifically when the player is in this range, and not outside it.
 function module.create_chaser_no_jump_range(attack_move_state)
     return {
+        id = "no_jump",
+        name = "No jump",
         shape = geometry.create_circle_shape(8):clip_top(0.2),
         is_visible = function(ent)
             return ent.move_state == attack_move_state
         end,
         is_active = function(ent)
             return ent.standing_on_uid ~= -1
-        end,
-        label = "No jump"
+        end
     }
 end
 

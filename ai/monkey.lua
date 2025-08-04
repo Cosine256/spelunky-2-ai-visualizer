@@ -8,12 +8,13 @@ return Entity_AI:new({
         id_field = "chased_target_uid"
     },
     ranges = {
-        { -- Jump
+        {
+            id = "jump",
+            name = "Jump",
             shape = geometry.create_circle_shape(4),
             is_active = function(ent)
                 return ent.move_state == 0 and ent.jump_timer == 0 and ent.falling_timer == 0
-            end,
-            label = "Jump"
+            end
         }
     }
 })

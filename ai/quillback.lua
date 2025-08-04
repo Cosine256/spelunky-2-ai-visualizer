@@ -10,31 +10,36 @@ return Entity_AI:new({
         id_field = "chased_target_uid"
     },
     ranges = {
-        { -- Jump
+        {
+            id = "jump",
+            name = "Jump",
             shape = geometry.create_circle_shape(5):clip_box(0, -2, nil, 2),
             flip_with_ent = true,
             is_visible = function(ent)
                 return ent.move_state == 0 or ent.move_state == 1
-            end,
-            label = "Jump"
+            end
         },
-        { -- Turn
+        {
+            id = "turn",
+            name = "Turn",
             shape = geometry.create_circle_shape(5):clip_box(nil, -2, 0, 2),
             flip_with_ent = true,
             is_visible = function(ent)
                 return ent.move_state == 0 or ent.move_state == 1
-            end,
-            label = "Turn"
+            end
         },
-        { -- Roll
+        {
+            id = "roll",
+            name = "Roll",
             shape = geometry.create_donut_shape(5, 12):clip_box(0, -2, nil, 2),
             flip_with_ent = true,
             is_visible = function(ent)
                 return ent.move_state == 0 or ent.move_state == 1
-            end,
-            label = "Roll"
+            end
         },
-        { -- Stomp
+        {
+            id = "stomp",
+            name = "Stomp",
             shape = geometry.create_box_shape(-1000, -1000, 0, 1000),
             flip_with_ent = true,
             is_visible = function(ent)
@@ -43,7 +48,6 @@ return Entity_AI:new({
             is_active = function(ent)
                 return ent.chased_target_uid ~= -1
             end,
-            label = "Stomp",
             label_position = LABEL_POSITION.RIGHT,
         }
     }

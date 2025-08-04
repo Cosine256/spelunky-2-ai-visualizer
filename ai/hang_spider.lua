@@ -1,5 +1,5 @@
 return Entity_AI:new({
     id = "hang_spider",
-    name = "Hang spider",
+    name = "Hang Spider",
     ent_type = ENT_TYPE.MONS_HANGSPIDER
 })

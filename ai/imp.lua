@@ -3,13 +3,14 @@ return Entity_AI:new({
     name = "Imp",
     ent_type = ENT_TYPE.MONS_IMP,
     ranges = {
-        { -- Aggro
+        {
+            id = "aggro",
+            name = "Aggro",
             shape = geometry.create_circle_shape(8):clip_box(-0.5, nil, 0.5, 0),
             is_visible = function(ent)
                 return ent.carrying_uid >= 0
             end,
-            is_inactive_when_stuck = false,
-            label = "Aggro",
+            is_inactive_when_stuck = false
         }
     }
 })

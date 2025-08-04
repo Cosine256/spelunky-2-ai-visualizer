@@ -3,12 +3,13 @@ return Entity_AI:new({
     name = "Butterfly",
     ent_type = ENT_TYPE.MONS_CRITTERBUTTERFLY,
     ranges = {
-        { -- Move away
+        {
+            id = "move_away",
+            name = "Move away",
             shape = geometry.create_circle_shape(4),
             is_active = function(ent)
                 return ent.move_state == 9
-            end,
-            label = "Move away"
+            end
         }
     }
 })

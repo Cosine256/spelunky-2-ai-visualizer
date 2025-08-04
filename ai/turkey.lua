@@ -1,4 +1,5 @@
 -- The mounted caveman's aggro_timer controls when the turkey stops running around after aggroing.
+-- TODO: Is the aggro controlled by the turkey entity, or the caveman rider entity?
 return Entity_AI:new({
     id = "turkey",
     name = "Turkey",
@@ -10,7 +11,9 @@ return Entity_AI:new({
         end
     end,
     ranges = {
-        { -- Aggro
+        {
+            id = "aggro",
+            name = "Aggro (caveman rider)",
             shape = geometry.create_box_shape(0, -0.4, 6, 0.4),
             flip_with_ent = true,
             line_of_sight_checks = 6,

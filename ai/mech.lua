@@ -19,8 +19,10 @@ return Entity_AI:new({
         ctx.can_attack = can_attack
     end,
     ranges = {
-        { -- Punch
+        {
             -- TODO: Becomes a shoot range when crouched, since the mech can't punch in that state.
+            id = "punch",
+            name = "Punch",
             shape = geometry.create_box_shape(0, -1, 1.65, 1),
             flip_with_ent = true,
             line_of_sight_checks = 2,
@@ -30,10 +32,11 @@ return Entity_AI:new({
             is_active = function(ent)
                 -- TODO
                 return true
-            end,
-            label = "Punch"
+            end
         },
-        { -- Shoot
+        {
+            id = "shoot",
+            name = "Shoot",
             shape = geometry.create_box_shape(4, -1, 6, 1),
             flip_with_ent = true,
              -- TODO: Label appears even when the entire range is blocked and should not be visible. Is something surviving the clip and giving the shape a zero-area AABB?
@@ -44,8 +47,7 @@ return Entity_AI:new({
             is_active = function(ent)
                 -- TODO
                 return true
-            end,
-            label = "Shoot"
+            end
         }
     }
 })

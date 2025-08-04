@@ -5,17 +5,20 @@ return Entity_AI:new({
     name = "Pangxie",
     ent_type = ENT_TYPE.MONS_CRABMAN,
     ranges = {
-        { -- Bubble
+        {
+            id = "bubble",
+            name = "Bubble",
             shape = geometry.create_box_shape(-1.5, 0, 1.5, 2.5),
             is_active = function(ent)
                 return ent.move_state == 0 or ent.move_state == 1
             end,
             is_visible = function(ent)
                 return ent.move_state ~= 11
-            end,
-            label = "Bubble"
+            end
         },
-        { -- Claw
+        {
+            id = "claw",
+            name = "Claw",
             shape = geometry.create_box_shape(1, -0.5, 5, 1),
             flip_with_ent = true,
             is_active = function(ent)
@@ -23,10 +26,11 @@ return Entity_AI:new({
             end,
             is_visible = function(ent)
                 return ent.move_state ~= 11
-            end,
-            label = "Claw"
+            end
         },
-        { -- Turn
+        {
+            id = "turn",
+            name = "Turn",
             shape = geometry.create_box_shape(-5, -0.5, -1, 1),
             flip_with_ent = true,
             is_active = function(ent)
@@ -34,25 +38,28 @@ return Entity_AI:new({
             end,
             is_visible = function(ent)
                 return ent.move_state ~= 11
-            end,
-            label = "Turn"
+            end
         },
-        { -- Claw Retract
+        {
             -- TODO: Clarify that this range applies to the claw, not the target.
+            id = "retract_claw_lower",
+            name = "Retract claw (lower)",
             shape = geometry.create_box_shape(-1000, -1000, 1000, -1.5),
             is_visible = function(ent)
                 return ent.move_state == 11
             end,
-            label = "Retract",
+            label = "Retract claw",
             label_position = LABEL_POSITION.TOP
         },
-        { -- Claw Retract
+        {
             -- TODO: Clarify that this range applies to the claw, not the target.
+            id = "retract_claw_upper",
+            name = "Retract claw (upper)",
             shape = geometry.create_box_shape(-1000, 1.5, 1000, 1000),
             is_visible = function(ent)
                 return ent.move_state == 11
             end,
-            label = "Retract",
+            label = "Retract claw",
             label_position = LABEL_POSITION.BOTTOM
         }
     }

@@ -10,7 +10,9 @@ return Entity_AI:new({
     ranges = {
         ai_common.create_chaser_turn_range(ai_common.MOVE_STATE.ATTACKING, "target_in_sight_timer"),
         ai_common.create_chaser_no_jump_range(ai_common.MOVE_STATE.ATTACKING),
-        { -- Use held item
+        {
+            id = "use_held_item",
+            name = ai_common.NPC_USABLE_ITEM_CLASS.DEFAULT.action_name,
             shape = geometry.create_box_shape(0, -0.18, 10, 0.18),
             flip_with_ent = true,
             line_of_sight_checks = 10,
@@ -20,7 +22,9 @@ return Entity_AI:new({
             is_active = ai_common.npc_use_held_item_range_active,
             label = ai_common.npc_use_held_item_range_label
         },
-        { -- Dialog
+        {
+            id = "dialog",
+            name = "Dialog",
             shape = geometry.create_circle_shape(2.5),
             post_transform_shape = function(ent, ctx, shape)
                 -- Sparrow will only interact with the target if they are both in the same room.
@@ -30,10 +34,11 @@ return Entity_AI:new({
                 return state.quests.sparrow_state == SPARROW.FIRST_HIDEOUT_SPAWNED_ROPE_THROW
                     or state.quests.sparrow_state == SPARROW.SECOND_HIDEOUT_SPAWNED_NEOBAB
                     or (state.quests.sparrow_state == SPARROW.SECOND_ENCOUNTER_INTERACTED and state.quests.madame_tusk_state ~= TUSK.DEAD)
-            end,
-            label = "Dialog"
+            end
         },
-        { -- Give reward
+        {
+            id = "give_reward",
+            name = "Give reward",
             shape = geometry.create_circle_shape(2.5),
             post_transform_shape = function(ent, ctx, shape)
                 -- Sparrow will only interact with the target if they are both in the same room.
@@ -51,8 +56,7 @@ return Entity_AI:new({
                     end
                 end
                 return total_opened == 4
-            end,
-            label = "Give reward"
+            end
         }
     }
 })

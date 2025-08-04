@@ -11,8 +11,10 @@ return {
             ctx.is_head_attacking = (ctx.bird_ent and ctx.bird_ent.move_state == 6) or (ctx.snake_ent and ctx.snake_ent.move_state == 6)
         end,
         ranges = {
-            { -- Move left
+            {
                 -- TODO: This draws over the entire screen. Make it fully transparent.
+                id = "move_left",
+                name = "Move left",
                 shape = geometry.create_box_shape(-1000, -1000, 0, 1000),
                 is_visible = function(ent)
                     return ent.move_state ~= 4
@@ -21,11 +23,12 @@ return {
                     -- TODO: Hundun can get closer to the sides while walking. I think this is because it uses the same checks to start walking, but then doesn't cut off the walk movement like it does when jumping into the sides.
                     return ent.move_state == 0 and ent.bounce_timer == 0 and not ctx.is_head_attacking and ctx.ent_x >= 8
                 end,
-                label = "Move left",
                 label_position = LABEL_POSITION.RIGHT
             },
-            { -- Move right
+            {
                 -- TODO: This draws over the entire screen. Make it fully transparent.
+                id = "move_right",
+                name = "Move right",
                 shape = geometry.create_box_shape(0, -1000, 1000, 1000),
                 is_visible = function(ent)
                     return ent.move_state ~= 4
@@ -34,10 +37,11 @@ return {
                     -- TODO: See comments for move left range.
                     return ent.move_state == 0 and ent.bounce_timer == 0 and not ctx.is_head_attacking and ctx.ent_x <= state.width * 10 - 2
                 end,
-                label = "Move right",
                 label_position = LABEL_POSITION.LEFT
             },
-            { -- Bite
+            {
+                id = "bite",
+                name = "Bite",
                 shape = geometry.create_circle_shape(6),
                 is_visible = function(ent, ctx)
                     return ent.move_state ~= 4 and (ctx.bird_ent or ctx.snake_ent)
@@ -49,10 +53,11 @@ return {
                     local are_all_heads_spawning = (not ctx.bird_ent or ctx.bird_ent.move_state == 2) and (not ctx.snake_ent or ctx.snake_ent.move_state == 2)
                     return ent.move_state == 0 and not ctx.is_head_attacking and not are_all_heads_spawning and ent.bounce_timer <= 120
                 end,
-                label = "Bite",
                 label_position = LABEL_POSITION.TOP
             },
-            { -- Fireball
+            {
+                id = "fireball",
+                name = "Fireball",
                 shape = geometry.create_box_shape(-1000, -1000, 1000, 1000),
                 post_transform_shape = function(ent, ctx, shape)
                     -- This height is hard-coded into the game.
@@ -64,15 +69,13 @@ return {
                 is_active = function(ent)
                     return ent.fireball_timer == 0
                 end,
-                label = "Fireball",
                 label_position = LABEL_POSITION.BOTTOM
             }
         }
     }),
     Entity_AI:new({
         id = "hundun_bird_head",
-        name = "Hundun bird head",
-        parent_id = "hundun",
+        name = "Hundun Bird Head",
         ent_type = ENT_TYPE.MONS_HUNDUN_BIRDHEAD,
         targeting = {
             id_field = "targeted_player_uid"
@@ -80,8 +83,7 @@ return {
     }),
     Entity_AI:new({
         id = "hundun_snake_head",
-        name = "Hundun snake head",
-        parent_id = "hundun",
+        name = "Hundun Snake Head",
         ent_type = ENT_TYPE.MONS_HUNDUN_SNAKEHEAD,
         targeting = {
             id_field = "targeted_player_uid"

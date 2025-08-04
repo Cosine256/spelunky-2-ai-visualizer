@@ -3,7 +3,9 @@ return Entity_AI:new({
     name = "Drone",
     ent_type = ENT_TYPE.MONS_CRITTERDRONE,
     ranges = {
-        { -- Move away
+        {
+            id = "move_away_or_approach",
+            name = "Move away or approach",
             shape = geometry.create_circle_shape(2),
             is_active = function(ent)
                 return ent.move_timer == 0

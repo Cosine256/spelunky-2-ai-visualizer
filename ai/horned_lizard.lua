@@ -1,10 +1,12 @@
 return Entity_AI:new({
     id = "horned_lizard",
-    name = "Horned lizard",
+    name = "Horned Lizard",
     ent_type = ENT_TYPE.MONS_HORNEDLIZARD,
     targeting = false,
     ranges = {
-        { -- Attack
+        {
+            id = "attack",
+            name = "Attack",
             shape = geometry.create_box_shape(0, -0.45, 6, 0.45),
             flip_with_ent = true,
             line_of_sight_checks = 6,
@@ -14,9 +16,8 @@ return Entity_AI:new({
             is_active = function(ent)
                 -- TODO
                 return true
-            end,
+            end
             -- TODO: Change label if lizard is going to panic instead. Note that it seems to not panic if on a single tile.
-            label = "Attack"
         }
     }
 })

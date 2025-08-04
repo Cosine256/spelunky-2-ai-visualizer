@@ -4,7 +4,9 @@ return Entity_AI:new({
     name = "Olmite",
     ent_type = { ENT_TYPE.MONS_OLMITE_BODYARMORED, ENT_TYPE.MONS_OLMITE_HELMET, ENT_TYPE.MONS_OLMITE_NAKED },
     ranges = {
-        { -- Jump
+        {
+            id = "jump",
+            name = "Jump",
             shape = geometry.create_box_shape(0, -0.4, 3, 0.4),
             flip_with_ent = true,
             line_of_sight_checks = 3,
@@ -14,10 +16,11 @@ return Entity_AI:new({
             is_active = function(ent)
                 -- TODO: attack_cooldown_timer is normally 0-60, but breaking an olmite stack can produce an olmite with a timer > 60 that never decrements. An olmite in this state can jump immediately and will fix its timer after landing.
                 return (ent.move_state == 0 or ent.move_state == 1) and ent.attack_cooldown_timer == 0
-            end,
-            label = "Jump"
+            end
         },
-        { -- Stomp
+        {
+            id = "stomp",
+            name = "Stomp",
             shape = geometry.create_box_shape(-0.4, -1000, 0.4, 0),
             is_visible = function(ent)
                 return ent.move_state == 2 or ent.move_state == 4
@@ -25,23 +28,17 @@ return Entity_AI:new({
             is_active = function(ent)
                 return ent.move_state == 2
             end,
-            label = "Stomp",
             label_position = LABEL_POSITION.TOP
         },
-        { -- Run (corridor check)
-            shape = function(ent, ctx)
+        {
+            id = "run_check",
+            name = "Run check",
+            shape = function(ent)
                 return geometry.create_point_set_shape(Vec2:new(ent.offsetx - ent.hitboxx, 1), Vec2:new(ent.offsetx + ent.hitboxx, 1))
             end,
             type = Entity_AI.RANGE_TYPE.SOLID_CHECK,
             is_active = function(ent)
                 return ent.standing_on_uid ~= -1 and (ent.move_state == 0 or ent.move_state == 1 or ent.move_state == 9)
-            end,
-            label = function(ent)
-                if ent.move_state == 9 then
-                    return "Walk"
-                else
-                    return "Run"
-                end
             end,
             -- TODO: This hack puts the label above the points.
             label_position = LABEL_POSITION.BOTTOM

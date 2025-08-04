@@ -9,24 +9,28 @@ return Entity_AI:new({
     ranges = {
         ai_common.create_chaser_turn_range(ai_common.MOVE_STATE.ATTACKING, "lose_interest_timer"),
         ai_common.create_chaser_no_jump_range(ai_common.MOVE_STATE.ATTACKING),
-        { -- Dialog (Tiamat)
+        {
+            id = "dialog",
+            name = "Dialog",
             shape = geometry.create_box_shape(-3, -1.5, 3, 1.5),
             is_visible = function(ent)
                 -- TODO: Anything else affect this? Tun aggro? Can it happen in other move_states? Other themes?
                 return ent.move_state == 0 and not ent.tiamat_encounter and state.theme == THEME.TIAMAT
             end,
-            label = "Dialog",
             label_position = LABEL_POSITION.TOP
         },
-        { -- Aggro
+        {
+            id = "aggro",
+            name = "Aggro",
             shape = geometry.create_circle_shape(6),
             is_visible = function(ent)
                 return (ent.move_state == 8 or ent.move_state == 9) and state.merchant_aggro > 0
             end,
-            is_inactive_when_stuck = false,
-            label = "Aggro"
+            is_inactive_when_stuck = false
         },
-        { -- Use held item
+        {
+            id = "use_held_item",
+            name = ai_common.NPC_USABLE_ITEM_CLASS.DEFAULT.action_name,
             shape = geometry.create_box_shape(0, -0.2, 10, 0.2),
             flip_with_ent = true,
             line_of_sight_checks = 10,

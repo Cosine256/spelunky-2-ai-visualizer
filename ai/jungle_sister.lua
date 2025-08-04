@@ -15,7 +15,10 @@ end
 local TURN_RANGE = ai_common.create_chaser_turn_range(ai_common.MOVE_STATE.ATTACKING, "target_in_sight_timer")
 local NO_JUMP_RANGE = ai_common.create_chaser_no_jump_range(ai_common.MOVE_STATE.ATTACKING)
 
+---@type Entity_AI_Range
 local DIALOG_JUNGLE_RANGE = {
+    id = "dialog_jungle",
+    name = "Dialog (jungle)",
     shape = geometry.create_circle_shape(2),
     post_transform_shape = function(ent, ctx, shape)
         -- The sister will only interact with the target if they are both in the same room.
@@ -28,7 +31,10 @@ local DIALOG_JUNGLE_RANGE = {
     label = "Dialog"
 }
 
+---@type Entity_AI_Range
 local DIALOG_OLMEC_RANGE = {
+    id = "dialog_olmec",
+    name = "Dialog (Olmec)",
     shape = geometry.create_circle_shape(3),
     post_transform_shape = function(ent, ctx, shape)
         -- The sister will only interact with the target if they are both in the same room.
@@ -41,18 +47,23 @@ local DIALOG_OLMEC_RANGE = {
     label_position = LABEL_POSITION.TOP
 }
 
+---@type Entity_AI_Range
 local DETECT_BOMB_RANGE = {
+    id = "detect_bomb",
+    name = "Detect bomb",
     -- TODO: Bottom and top are 2 tiles from sister's hitbox, not these seemingly arbitrary values. Left and right seem to be hard-coded to 4.
     shape = geometry.create_box_shape(-4, -2.54, 4, 2.25),
     type = Entity_AI.RANGE_TYPE.HITBOX_OVERLAP,
     is_visible = function(ent)
         return ent.move_state ~= 6
     end,
-    label = "Detect bomb",
     label_position = LABEL_POSITION.TOP
 }
 
+---@type Entity_AI_Range
 local USE_HELD_ITEM_RANGE = {
+    id = "use_held_item",
+    name = ai_common.NPC_USABLE_ITEM_CLASS.DEFAULT.action_name,
     shape = geometry.create_box_shape(0, -0.18, 10, 0.18),
     flip_with_ent = true,
     line_of_sight_checks = 10,
@@ -65,13 +76,8 @@ local USE_HELD_ITEM_RANGE = {
 
 return {
     Entity_AI:new({
-        id = "jungle_sister",
-        name = "Jungle sister"
-    }),
-    Entity_AI:new({
         id = "parsley",
         name = "Parsley",
-        parent_id = "jungle_sister",
         ent_type = ENT_TYPE.MONS_SISTER_PARSLEY,
         ranges = {
             TURN_RANGE,
@@ -80,7 +86,9 @@ return {
             DIALOG_OLMEC_RANGE,
             DETECT_BOMB_RANGE,
             USE_HELD_ITEM_RANGE,
-            { -- Dialog (tide pool)
+            {
+                id = "dialog_tide_pool",
+                name = "Dialog (tide pool)",
                 shape = geometry.create_box_shape(-5, -1.5, 5, 1.5),
                 is_visible = function(ent)
                     return (ent.move_state == 0 or ent.move_state == 1) and state.theme == THEME.TIDE_POOL
@@ -94,7 +102,6 @@ return {
     Entity_AI:new({
         id = "parsnip",
         name = "Parsnip",
-        parent_id = "jungle_sister",
         ent_type = ENT_TYPE.MONS_SISTER_PARSNIP,
         ranges = {
             TURN_RANGE,
@@ -103,7 +110,9 @@ return {
             DIALOG_OLMEC_RANGE,
             DETECT_BOMB_RANGE,
             USE_HELD_ITEM_RANGE,
-            { -- Dialog (neo babylon)
+            {
+                id = "dialog_neo_babylon",
+                name = "Dialog (neo babylon)",
                 shape = geometry.create_circle_shape(2),
                 post_transform_shape = function(ent, ctx, shape)
                     -- The sister will only interact with the target if they are both in the same room.
@@ -121,7 +130,6 @@ return {
     Entity_AI:new({
         id = "parmesan",
         name = "Parmesan",
-        parent_id = "jungle_sister",
         ent_type = ENT_TYPE.MONS_SISTER_PARMESAN,
         ranges = {
             TURN_RANGE,
@@ -130,7 +138,9 @@ return {
             DIALOG_OLMEC_RANGE,
             DETECT_BOMB_RANGE,
             USE_HELD_ITEM_RANGE,
-            { -- Dialog (ice caves)
+            {
+                id = "dialog_ice_caves",
+                name = "Dialog (ice caves)",
                 shape = geometry.create_circle_shape(2),
                 post_transform_shape = function(ent, ctx, shape)
                     -- The sister will only interact with the target if they are both in the same room.

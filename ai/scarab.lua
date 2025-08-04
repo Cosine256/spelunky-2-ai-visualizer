@@ -4,13 +4,14 @@ return Entity_AI:new({
     name = "Scarab",
     ent_type = ENT_TYPE.MONS_SCARAB,
     ranges = {
-        { -- Move away
+        {
+            id = "move_away",
+            name = "Move away",
             shape = geometry.create_circle_shape(6):clip_top(-0.2),
             is_active = function(ent)
                 -- TODO: Timer jumps from 1 to the reset value without ever staying at 0 for a frame.
                 return ent.timer <= 1
-            end,
-            label = "Move away"
+            end
         }
     }
 })

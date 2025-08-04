@@ -180,9 +180,12 @@ function Triangle:clip(clip_line)
     end
 end
 
+---@alias Shape table
+
 local Shape = {}
 Shape.__index = Shape
 
+---@return Shape
 function Shape:new()
     local o = {}
     setmetatable(o, self)

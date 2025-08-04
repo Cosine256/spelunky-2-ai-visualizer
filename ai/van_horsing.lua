@@ -11,7 +11,9 @@ return Entity_AI:new({
     ranges = {
         ai_common.create_chaser_turn_range(ai_common.MOVE_STATE.ATTACKING, "target_in_sight_timer"),
         ai_common.create_chaser_no_jump_range(ai_common.MOVE_STATE.ATTACKING),
-        { -- Use held item
+        {
+            id = "use_held_item",
+            name = ai_common.NPC_USABLE_ITEM_CLASS.DEFAULT.action_name,
             shape = geometry.create_box_shape(0, -0.18, 10, 0.18),
             flip_with_ent = true,
             line_of_sight_checks = 10,
@@ -21,7 +23,9 @@ return Entity_AI:new({
             is_active = ai_common.npc_use_held_item_range_active,
             label = ai_common.npc_use_held_item_range_label
         },
-        { -- Dialog (jail cell)
+        {
+            id = "dialog_jail_cell",
+            name = "Dialog (jail cell)",
             shape = geometry.create_circle_shape(2),
             post_transform_shape = function(ent, ctx, shape)
                 -- Van Horsing will only interact with the target if they are both in the same room.
@@ -32,8 +36,10 @@ return Entity_AI:new({
             end,
             label = "Dialog"
         },
-        { -- Dialog (Vlad's castle)
+        {
             -- The show_text field is the only thing that actually controls whether this dialog occurs.
+            id = "dialog_castle",
+            name = "Dialog (Vlad's castle)",
             shape = geometry.create_box_shape(-8, -4, 8, 4),
             is_visible = function(ent)
                 return ent.show_text or state.quests.van_horsing_state == VANHORSING.SPAWNED_IN_VLADS_CASTLE
@@ -43,7 +49,9 @@ return Entity_AI:new({
             end,
             label = "Dialog"
         },
-        { -- Dialog (tide pool)
+        {
+            id = "dialog_tide_pool",
+            name = "Dialog (tide pool)",
             shape = geometry.create_box_shape(-5, -1.5, 5, 1.5),
             is_visible = function(ent)
                 return not ent.special_message_shown and state.quests.van_horsing_state == VANHORSING.SHOT_VLAD and state.theme == THEME.TIDE_POOL
@@ -51,7 +59,9 @@ return Entity_AI:new({
             label = "Dialog",
             label_position = LABEL_POSITION.TOP
         },
-        { -- Dialog (temple)
+        {
+            id = "dialog_temple",
+            name = "Dialog (temple)",
             shape = geometry.create_box_shape(-3, -1, 3, 1),
             post_transform_shape = function(ent, ctx, shape)
                 -- Van Horsing will only interact with the target if they are both in the same room.
@@ -62,7 +72,9 @@ return Entity_AI:new({
             end,
             label = "Dialog"
         },
-        { -- Dialog (Tusk palace)
+        {
+            id = "dialog_palace",
+            name = "Dialog (Tusk's palace)",
             shape = geometry.create_box_shape(-5, -1, 5, 1),
             post_transform_shape = function(ent, ctx, shape)
                 -- Van Horsing will only interact with the target if they are both in the same room.

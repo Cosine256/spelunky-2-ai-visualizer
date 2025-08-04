@@ -1,15 +1,18 @@
 -- TODO: Ai class has a lot of unknown variables that probably control things I'd be interested in.
+-- TODO: Also apply to AI-controlled playable characters (rescued or resurrected).
 -- TODO: Ranged weapon usage
 -- TODO: Item/enemy seeking
 return Entity_AI:new({
     id = "hired_hand",
-    name = "Hired hand & eggplant child",
+    name = "Hired Hand & Eggplant Child",
     ent_type = { ENT_TYPE.CHAR_HIREDHAND, ENT_TYPE.CHAR_EGGPLANT_CHILD },
     targeting = {
         id_field = { "ai", "target_uid" }
     },
     ranges = {
-        { -- Adopt (asleep)
+        {
+            id = "adopt_asleep",
+            name = "Adopt (asleep)",
             -- TODO: Actual range seems to be around 1.99662, possibly due to rounding errors.
             -- TODO: Eggplant child seems to have a "same room" requirement. What about normal HHs? Only in back layer?
             shape = geometry.create_circle_shape(2),
@@ -18,7 +21,9 @@ return Entity_AI:new({
             end,
             label = "Adopt"
         },
-        { -- Adopt (awake)
+        {
+            id = "adopt_awake",
+            name = "Adopt (awake)",
             -- TODO: Distance not precisely tested, but probably has same rounding errors as asleep range.
             -- TODO: Does this range have a "same room" requirement? Maybe only in back layer?
             shape = geometry.create_circle_shape(4),

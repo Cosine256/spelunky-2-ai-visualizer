@@ -12,6 +12,8 @@ return Entity_AI:new({
         ai_common.create_chaser_no_jump_range(2),
         {
             -- Range in which the leprechaun can jump if there is a tile above an empty space 2 in front of it.
+            id = "gap_jump",
+            name = "Gap jump",
             shape = geometry.create_box_shape(-1000, -1, 1000, 1000),
             is_visible = function(ent)
                 return ent.move_state == 2
@@ -19,18 +21,18 @@ return Entity_AI:new({
             is_active = function(ent)
                 return ent.standing_on_uid ~= -1
             end,
-            label = "Gap Jump",
             label_position = LABEL_POSITION.BOTTOM,
         },
-        { -- Aggro
+        {
+            id = "aggro",
+            name = "Aggro",
             shape = geometry.create_circle_shape(8),
             is_visible = function(ent)
                 return ent.move_state == 0 or ent.move_state == 1 or ent.move_state == 5 or ent.move_state == 6
             end,
             is_active = function(ent)
                 return ent.move_state == 0 or ent.move_state == 1
-            end,
-            label = "Aggro"
+            end
         }
     }
 })

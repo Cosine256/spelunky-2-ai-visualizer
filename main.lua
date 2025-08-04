@@ -135,9 +135,11 @@ local default_options = {
     -- entity_ai will be populated while loading entity AIs.
 }
 
--- List of entity AIs. Contents should be initialized while loading the script.
+---List of entity AIs. Contents should be initialized while loading the script.
+---@type Entity_AI[]
 local entity_ai_list
--- Map of entity AIs with entity type IDs as keys. Generated based on entity_ai_list.
+---Map of entity AIs with entity type IDs as keys. Generated based on entity_ai_list.
+---@type { [ENT_TYPE]: Entity_AI }
 local entity_ai_by_ent_type
 -- List of all entity types covered by entity AIs. Generated based on entity_ai_by_ent_type.
 local entity_ai_ent_type_list
@@ -174,17 +176,27 @@ local function init_entity_ai()
         if type(entity_ai.ent_type) == "number" then
             ent_types = { entity_ai.ent_type }
         elseif type(entity_ai.ent_type) == "table" then
-            ent_types = entity_ai.ent_type
+            ent_types = entity_ai.ent_type --[[@as table]]
         else
             ent_types = {}
         end
         for _, ent_type in ipairs(ent_types) do
             entity_ai_by_ent_type[ent_type] = entity_ai
         end
-        if not entity_ai.parent_id then
-            default_options.entity_ai[entity_ai.id] = {
-                visible = true
-            }
+        local entity_ai_options = {
+            visible = true
+        }
+        default_options.entity_ai[entity_ai.id] = entity_ai_options
+        if entity_ai.targeting then
+            entity_ai_options.target_visible = true
+        end
+        if entity_ai.ranges then
+            entity_ai_options.ranges = {}
+            for _, range in ipairs(entity_ai.ranges) do
+                entity_ai_options.ranges[range.id] = {
+                    visible = true
+                }
+            end
         end
     end
 
@@ -257,19 +269,28 @@ local function process_tracked_entity(id)
         return
     end
 
-    if not options.entity_ai[entity_ai.parent_id or entity_ai.id].visible then
+    local entity_ai_options = options.entity_ai[entity_ai.id]
+    if not entity_ai_options.visible then
         return
     end
 
-    local ranges_visible = options.entity_ranges_visible
-    local targeting_visible = options.entity_target_visible and entity_ai.targeting
+    local ranges_visible = false
+    if entity_ai.ranges and options.entity_ranges_visible then
+        for _, range_options in pairs(entity_ai_options.ranges) do
+            if range_options.visible then
+                ranges_visible = true
+                break
+            end
+        end
+    end
+    local targeting_visible = entity_ai.targeting and options.entity_target_visible and entity_ai_options.target_visible
     if not ranges_visible and not targeting_visible then
         return
     end
 
     local ent_x, ent_y, ent_layer = get_position(ent.uid)
 
-    -- This processing context has a lifespan of one processing call, and is passed into every Entity_AI function. The entity is also passed into every function as its own parameter for convenience due to how frequently it is used.
+    -- This processing context has a lifespan of one entity processing event, and is passed into every Entity_AI function. The entity is also passed into every function as its own parameter for convenience due to how frequently it is used.
     local process_ctx = {
         ent = ent,
         ent_x = ent_x,
@@ -289,107 +310,106 @@ local function process_tracked_entity(id)
         local is_stunned = ent.state == CHAR_STATE.STUNNED
         local is_frozen = ent.frozen_timer and ent.frozen_timer > 0
 
-        if entity_ai.ranges then
-            for i, range in ipairs(entity_ai.ranges) do
-                if range.is_visible and not range.is_visible(ent, process_ctx) then
-                    goto skip_range
-                end
-
-                local layer
-                if range.layer then
-                    if type(range.layer) == "function" then
-                        layer = range.layer(ent, process_ctx)
-                    else
-                        layer = range.layer
-                    end
-                else
-                    layer = ent_layer
-                end
-                if layer ~= LAYER.BOTH and layer ~= state.camera_layer then
-                    goto skip_range
-                end
-
-                local shapes = {}
-                if range.shape then
-                    if type(range.shape) == "function" then
-                        table.insert(shapes, range.shape(ent, process_ctx))
-                    else
-                        table.insert(shapes, range.shape:clone())
-                    end
-                end
-                if range.shapes then
-                    for _, shape in ipairs(range.shapes) do
-                        if type(shape) == "function" then
-                            table.insert(shapes, shape(ent, process_ctx))
-                        else
-                            table.insert(shapes, shape:clone())
-                        end
-                    end
-                end
-
-                local draw_color = ORIGIN_CHECK_COLOR
-                if range.type == Entity_AI.RANGE_TYPE.MISC then
-                    draw_color = MISC_BOX_COLOR
-                elseif range.type == Entity_AI.RANGE_TYPE.HITBOX_OVERLAP then
-                    -- TODO: Make it more obvious that this is a hitbox overlap check. It's difficult to understand with just a color.
-                    draw_color = HITBOX_OVERLAP_COLOR
-                elseif range.type == Entity_AI.RANGE_TYPE.HURTBOX then
-                    -- TODO: Make it more obvious that this is a hitbox overlap check. It's difficult to understand with just a color.
-                    draw_color = HURTBOX_COLOR
-                elseif range.type == Entity_AI.RANGE_TYPE.SOLID_CHECK then
-                    draw_color = SOLID_CHECK_COLOR
-                end
-
-                local is_inactive_when_stuck = range.is_inactive_when_stuck == nil or range.is_inactive_when_stuck
-                local is_active = not is_stunned and not is_frozen
-                    and not (is_inactive_when_stuck and is_stuck)
-                    and (not range.is_active or range.is_active(ent, process_ctx))
-
-                local ucolors = is_active and draw_color:get_variant(i).bright or draw_color:get_variant(i).dim
-
-                local label
-                local label_position = range.label_position
-                if range.label ~= nil then
-                    if type(range.label) == "function" then
-                        label = range.label(ent, process_ctx)
-                    else
-                        label = tostring(range.label)
-                    end
-                end
-
-                local x, y
-                if range.translate_shape then
-                    x, y = range.translate_shape(ent, process_ctx)
-                end
-                if not x or not y then
-                    x, y = ent_x, ent_y
-                end
-
-                for _, shape in ipairs(shapes) do
-                    if range.flip_with_ent and process_ctx.is_facing_left then
-                        shape:flip_horizontal()
-                        label_position = drawing.Draw_Item.flip_label_position_horizontal(label_position)
-                    end
-                    shape:translate(x, y)
-
-                    if range.flip_with_ent and range.line_of_sight_checks then
-                        clip_line_of_sight(process_ctx, shape, range.line_of_sight_checks, range.line_of_sight_extra_length or 0.5)
-                    end
-
-                    if range.post_transform_shape then
-                        shape = range.post_transform_shape(ent, process_ctx, shape)
-                    end
-
-                    table.insert(tracked_ent_data.draw_items, drawing.Draw_Item:new({
-                        shape = shape,
-                        ucolors = ucolors,
-                        label = label,
-                        label_position = label_position
-                    }))
-                end
-
-                ::skip_range::
+        for i, range in ipairs(entity_ai.ranges) do
+            if not entity_ai_options.ranges[range.id].visible or (range.is_visible and not range.is_visible(ent, process_ctx)) then
+                goto skip_range
             end
+
+            local layer
+            if range.layer then
+                if type(range.layer) == "function" then
+                    layer = range.layer(ent, process_ctx)
+                else
+                    layer = range.layer
+                end
+            else
+                layer = ent_layer
+            end
+            if layer ~= LAYER.BOTH and layer ~= state.camera_layer then
+                goto skip_range
+            end
+
+            local shapes = {}
+            if range.shape then
+                if type(range.shape) == "function" then
+                    table.insert(shapes, range.shape(ent, process_ctx))
+                else
+                    table.insert(shapes, range.shape:clone())
+                end
+            end
+            if range.shapes then
+                for _, shape in ipairs(range.shapes) do
+                    if type(shape) == "function" then
+                        table.insert(shapes, shape(ent, process_ctx))
+                    else
+                        table.insert(shapes, shape:clone())
+                    end
+                end
+            end
+
+            local draw_color = ORIGIN_CHECK_COLOR
+            if range.type == Entity_AI.RANGE_TYPE.MISC then
+                draw_color = MISC_BOX_COLOR
+            elseif range.type == Entity_AI.RANGE_TYPE.HITBOX_OVERLAP then
+                -- TODO: Make it more obvious that this is a hitbox overlap check. It's difficult to understand with just a color.
+                draw_color = HITBOX_OVERLAP_COLOR
+            elseif range.type == Entity_AI.RANGE_TYPE.HURTBOX then
+                -- TODO: Make it more obvious that this is a hitbox overlap check. It's difficult to understand with just a color.
+                draw_color = HURTBOX_COLOR
+            elseif range.type == Entity_AI.RANGE_TYPE.SOLID_CHECK then
+                draw_color = SOLID_CHECK_COLOR
+            end
+
+            local is_inactive_when_stuck = range.is_inactive_when_stuck == nil or range.is_inactive_when_stuck
+            local is_active = not is_stunned and not is_frozen
+                and not (is_inactive_when_stuck and is_stuck)
+                and (not range.is_active or range.is_active(ent, process_ctx))
+
+            local ucolors = is_active and draw_color:get_variant(i).bright or draw_color:get_variant(i).dim
+
+            local label = range.label
+            if type(label) == "function" then
+                label = label(ent, process_ctx)
+            end
+            if label == nil then
+                label = range.name
+            elseif label ~= false and type(label) ~= "string" then
+                label = tostring(label)
+            end
+            local label_position = range.label_position
+
+            local x, y
+            if range.translate_shape then
+                x, y = range.translate_shape(ent, process_ctx)
+            end
+            if not x or not y then
+                x, y = ent_x, ent_y
+            end
+
+            for _, shape in ipairs(shapes) do
+                if range.flip_with_ent and process_ctx.is_facing_left then
+                    shape:flip_horizontal()
+                    label_position = drawing.Draw_Item.flip_label_position_horizontal(label_position)
+                end
+                shape:translate(x, y)
+
+                if range.flip_with_ent and range.line_of_sight_checks then
+                    clip_line_of_sight(process_ctx, shape, range.line_of_sight_checks, range.line_of_sight_extra_length or 0.5)
+                end
+
+                if range.post_transform_shape then
+                    shape = range.post_transform_shape(ent, process_ctx, shape)
+                end
+
+                table.insert(tracked_ent_data.draw_items, drawing.Draw_Item:new({
+                    shape = shape,
+                    ucolors = ucolors,
+                    label = label,
+                    label_position = label_position
+                }))
+            end
+
+            ::skip_range::
         end
     end
 
@@ -440,15 +460,22 @@ local function draw_options(ctx, is_window)
 
     ctx:win_separator()
 
-    ctx:win_section("Entity AI visualizations", function()
+    ctx:win_section("Entity AI Visualizations", function()
         ctx:win_indent(INDENT)
 
+        options.entity_target_visible = ctx:win_check("Targeting visible", options.entity_target_visible)
+        ctx:win_indent(INDENT)
+        ctx:win_text("Global toggle for entity targeting visualizations.")
+        ctx:win_indent(-INDENT)
+
         options.entity_ranges_visible = ctx:win_check("Ranges visible", options.entity_ranges_visible)
-        ctx:win_text("Global toggle for entity range overlay.")
+        ctx:win_indent(INDENT)
+        ctx:win_text("Global toggle for entity range visualizations.")
+        ctx:win_indent(-INDENT)
 
-        options.entity_target_visible = ctx:win_check("targeting visible", options.entity_target_visible)
-        ctx:win_text("Global toggle for entity targeting overlay.")
-
+        ctx:win_pushid("entities")
+        ctx:win_text("Entities:")
+        ctx:win_indent(INDENT)
         if ctx:win_button("Check all") then
             for id, _ in pairs(options.entity_ai) do
                 options.entity_ai[id].visible = true
@@ -460,12 +487,48 @@ local function draw_options(ctx, is_window)
                 options.entity_ai[id].visible = false
             end
         end
-
         for _, entity_ai in ipairs(entity_ai_list) do
-            if not entity_ai.parent_id then
-                options.entity_ai[entity_ai.id].visible = ctx:win_check(entity_ai.name, options.entity_ai[entity_ai.id].visible)
-            end
+            local entity_ai_options = options.entity_ai[entity_ai.id]
+            ctx:win_pushid(entity_ai.id)
+            entity_ai_options.visible = ctx:win_check("##visible", entity_ai_options.visible)
+            ctx:win_inline()
+            ctx:win_section(entity_ai.name.."###section", function()
+                ctx:win_indent(INDENT)
+                if entity_ai.targeting then
+                    entity_ai_options.target_visible = ctx:win_check("Targeting visible", entity_ai_options.target_visible)
+                end
+                if entity_ai.ranges and #entity_ai.ranges > 0 then
+                    ctx:win_pushid("ranges")
+                    ctx:win_text("Ranges visible:")
+                    ctx:win_indent(INDENT)
+                    if #entity_ai.ranges > 1 then
+                        if ctx:win_button("Check all") then
+                            for _, range in ipairs(entity_ai.ranges) do
+                                entity_ai_options.ranges[range.id].visible = true
+                            end
+                        end
+                        ctx:win_inline()
+                        if ctx:win_button("Uncheck all") then
+                            for _, range in ipairs(entity_ai.ranges) do
+                                entity_ai_options.ranges[range.id].visible = false
+                            end
+                        end
+                    end
+                    for _, range in ipairs(entity_ai.ranges) do
+                        local range_options = entity_ai_options.ranges[range.id]
+                        ctx:win_pushid(range.id)
+                        range_options.visible = ctx:win_check(range.name.."###visible", range_options.visible)
+                        ctx:win_popid()
+                    end
+                    ctx:win_indent(-INDENT)
+                    ctx:win_popid()
+                end
+                ctx:win_indent(-INDENT)
+            end)
+            ctx:win_popid()
         end
+        ctx:win_indent(-INDENT)
+        ctx:win_popid()
 
         ctx:win_indent(-INDENT)
     end)
