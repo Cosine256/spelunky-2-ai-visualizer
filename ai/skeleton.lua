@@ -6,7 +6,6 @@ return Entity_AI:new({
     ranges = {
         {
             -- TODO: I think red skeletons follow the same rules after settling down, but I haven't thoroughly tested that.
-            -- TODO: Red skeletons show this range for 1 frame when they spawn in. Post-entity spawn might be getting called before the game sets their move state.
             id = "aggro",
             name = "Aggro",
             shape = geometry.create_circle_shape(4):clip_top(0.5),

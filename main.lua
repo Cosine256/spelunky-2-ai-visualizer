@@ -219,9 +219,8 @@ local function get_entity_ai(ent)
     return entity_ai
 end
 
-local function create_tracked_entity(ent)
+local function add_tracked_entity(ent)
     tracked_ents[ent.uid] = {}
-    return ent.uid
 end
 
 local function should_process_entities(screen)
@@ -444,7 +443,7 @@ end
 local function scan_for_tracked_entities()
     if should_process_entities(state.screen) then
         for _, ent_id in ipairs(get_entities_by_type(entity_ai_ent_type_list)) do
-            process_tracked_entity(create_tracked_entity(get_entity(ent_id)))
+            add_tracked_entity(get_entity(ent_id))
         end
     end
 end
@@ -579,7 +578,7 @@ local function on_draw_gui(ctx)
     end
 end
 
-local function on_game_frame()
+local function on_post_game_loop()
     if should_process_entities(state.screen) then
         for id, _ in pairs(tracked_ents) do
             process_tracked_entity(id)
@@ -602,11 +601,12 @@ set_callback(function(ctx)
     set_callback(persistence.save, ON.SAVE)
 
     set_callback(on_draw_gui, ON.GUIFRAME)
-    -- TODO: Using a global interval here because ON.GAMEFRAME isn't triggering during OL frame advances.
-    set_global_interval(on_game_frame, 1)
+    set_callback(on_post_game_loop, ON.POST_GAME_LOOP)
+    -- Also execute this logic even if the game loop was blocked, ensuring that visualizations will update regularly during freeze pauses. This matters for changes that could affect visualizations while paused, such as toggling visibility options or moving entities in Overlunky.
+    set_callback(on_post_game_loop, ON.BLOCKED_GAME_LOOP)
     set_callback(on_pre_load_screen, ON.PRE_LOAD_SCREEN)
 
-    -- Immediately initialize the tracked entities and scan any entities that currently exist.
+    -- Initialize the tracked entities and immediately scan for entities that already exist.
     clear_tracked_entities()
     scan_for_tracked_entities()
 
@@ -614,7 +614,7 @@ set_callback(function(ctx)
     if #entity_ai_ent_type_list > 0 then
         set_post_entity_spawn(function(ent)
             if should_process_entities(state.screen) then
-                process_tracked_entity(create_tracked_entity(ent))
+                add_tracked_entity(ent)
             end
         end, SPAWN_TYPE.ANY, MASK.ANY, entity_ai_ent_type_list)
     end
