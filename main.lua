@@ -440,12 +440,19 @@ local function clear_tracked_entities()
     tracked_ents = {}
 end
 
-local function scan_for_tracked_entities()
+local function refresh_tracked_entities()
+    clear_tracked_entities()
     if should_process_entities(state.screen) then
         for _, ent_id in ipairs(get_entities_by_type(entity_ai_ent_type_list)) do
             add_tracked_entity(get_entity(ent_id))
         end
     end
+end
+
+local function draw_indented_text(ctx, text)
+    ctx:win_indent(INDENT)
+    ctx:win_text(text)
+    ctx:win_indent(-INDENT)
 end
 
 local function draw_options(ctx, is_window)
@@ -454,6 +461,10 @@ local function draw_options(ctx, is_window)
             options.options_window_visible = true
         end
     end
+    if ctx:win_button("Refresh visualizations") then
+        refresh_tracked_entities()
+    end
+    draw_indented_text(ctx, "Regenerate all visualization data. This may fix frozen or missing visualizations.")
 
     options.player_origin_visible = ctx:win_check("Show player origin point", options.player_origin_visible)
 
@@ -463,14 +474,10 @@ local function draw_options(ctx, is_window)
         ctx:win_indent(INDENT)
 
         options.entity_target_visible = ctx:win_check("Targeting visible", options.entity_target_visible)
-        ctx:win_indent(INDENT)
-        ctx:win_text("Global toggle for entity targeting visualizations.")
-        ctx:win_indent(-INDENT)
+        draw_indented_text(ctx, "Global toggle for entity targeting visualizations.")
 
         options.entity_ranges_visible = ctx:win_check("Ranges visible", options.entity_ranges_visible)
-        ctx:win_indent(INDENT)
-        ctx:win_text("Global toggle for entity range visualizations.")
-        ctx:win_indent(-INDENT)
+        draw_indented_text(ctx, "Global toggle for entity range visualizations.")
 
         ctx:win_pushid("entities")
         ctx:win_text("Entities:")
@@ -539,12 +546,12 @@ local function draw_options(ctx, is_window)
             print("Save occurred too recently. Wait a few seconds and try again.")
         end
     end
-    ctx:win_text("Immediately save the current options. Saves also happen automatically during screen changes.")
+    draw_indented_text(ctx, "Immediately save the current options. Saves also happen automatically during screen changes.")
 
     if ctx:win_button("Reset options") then
         options = persistence.deep_copy(default_options)
     end
-    ctx:win_text("Reset all options to their default values.")
+    draw_indented_text(ctx, "Reset all options to their default values.")
 end
 
 local function on_draw_gui(ctx)
@@ -605,12 +612,13 @@ set_callback(function(ctx)
     -- Also execute this logic even if the game loop was blocked, ensuring that visualizations will update regularly during freeze pauses. This matters for changes that could affect visualizations while paused, such as toggling visibility options or moving entities in Overlunky.
     set_callback(on_post_game_loop, ON.BLOCKED_GAME_LOOP)
     set_callback(on_pre_load_screen, ON.PRE_LOAD_SCREEN)
+    -- TODO: This callback does not execute between Playlunky and Overlunky. For example, if this script is loaded in Playlunky, then it won't detect when Overlunky loads a save state.
+    set_callback(refresh_tracked_entities, ON.POST_LOAD_STATE)
 
-    -- Initialize the tracked entities and immediately scan for entities that already exist.
-    clear_tracked_entities()
-    scan_for_tracked_entities()
+    -- Immediately track entities that already exist.
+    refresh_tracked_entities()
 
-    -- Track any entities that are created after the initial scan.
+    -- Track subsequent entities as they are created.
     if #entity_ai_ent_type_list > 0 then
         set_post_entity_spawn(function(ent)
             if should_process_entities(state.screen) then
