@@ -1,3 +1,5 @@
+local ai_common = require("ai/common")
+
 return {
     Entity_AI:new({
         id = "witch_doctor",
@@ -19,18 +21,7 @@ return {
                     return true
                 end
             },
-            {
-                id = "chat",
-                name = "Chat",
-                shape = geometry.create_box_shape(0.5, -0.1, 1.5, 0.1),
-                flip_with_ent = true,
-                is_visible = function(ent)
-                    return ent.move_state == 0 or ent.move_state == 1
-                end,
-                is_active = function(ent)
-                    return ent.cooldown_timer == 0
-                end
-            }
+            ai_common.create_caveman_chat_range()
         }
     }),
     Entity_AI:new({

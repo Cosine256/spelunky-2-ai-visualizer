@@ -186,4 +186,20 @@ function module.create_chaser_no_jump_range(attack_move_state)
     }
 end
 
+function module.create_caveman_chat_range()
+    return {
+        id = "chat",
+        name = "Chat",
+        shape = geometry.create_box_shape(0.5, -0.1, 1.5, 0.1),
+        flip_with_ent = true,
+        is_visible = function(ent)
+            -- Only basic caveman can normally ride mounts, but the other types will also not chat if mounted.
+            return (ent.move_state == 0 or ent.move_state == 1) and not module.is_mounted(ent)
+        end,
+        is_active = function(ent)
+            return ent.cooldown_timer == 0
+        end
+    }
+end
+
 return module
