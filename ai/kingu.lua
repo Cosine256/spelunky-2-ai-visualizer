@@ -143,7 +143,7 @@ return Entity_AI:new({
             -- AI bug: These bounds are not horizontally centered within the level.
             shape = geometry.create_box_shape(MIN_X, MIN_Y, MAX_X, MAX_Y),
             type = Entity_AI.RANGE_TYPE.MISC,
-            translate_shape = function(ent)
+            translate_shape = function()
                 return 0, 0
             end
         }

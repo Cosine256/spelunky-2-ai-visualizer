@@ -58,10 +58,10 @@ return {
             {
                 id = "fireball",
                 name = "Fireball",
-                shape = geometry.create_box_shape(-1000, -1000, 1000, 1000),
-                post_transform_shape = function(ent, ctx, shape)
-                    -- This height is hard-coded into the game.
-                    return shape:clip_bottom(101.5)
+                shape = geometry.create_box_shape(-1000, 101.5, 1000, 1000),
+                translate_shape = function(ent, ctx)
+                    -- Translate by Hundun's X position to keep the label centered on Hundun.
+                    return ctx.ent_x, 0
                 end,
                 is_visible = function(ent)
                     return ent.move_state ~= 4 and ent.hundun_flags & HUNDUNFLAGS.TOPLEVELARENAREACHED > 0

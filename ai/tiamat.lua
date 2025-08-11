@@ -8,8 +8,10 @@ return Entity_AI:new({
         {
             id = "shoot",
             name = "Shoot",
-            -- TODO: This range is actually hard-coded as (7.5, 55.5, 27.5, 70.5). It is not based on Tiamat's position nor the level size.
-            shape = geometry.create_box_shape(-11, -6, 9, 10),
+            shape = geometry.create_box_shape(7.5, 54.5, 27.5, 70.5),
+            translate_shape = function()
+                return 0, 0
+            end,
             is_active = function(ent)
                 return ent.move_state == 0 and ent.attack_timer == 0
             end
