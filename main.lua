@@ -577,7 +577,7 @@ local function on_draw_gui(ctx)
 
     ctx:draw_layer(DRAW_LAYER.WINDOW)
     if options.options_window_visible then
-        options.options_window_visible = ctx:window(meta.name.." Options", -1, -0.1, 0.35, 0.85, true, function()
+        options.options_window_visible = ctx:window(meta.name.." Options", -1.0, 0.74, 0.35, 0.85, true, function()
             ctx:win_indent(INDENT)
             draw_options(ctx, true)
             ctx:win_indent(-INDENT)
